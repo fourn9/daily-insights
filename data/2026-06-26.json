@@ -1,0 +1,32 @@
+{
+  "date": "2026-06-26",
+  "generatedAt": "2026-06-26T19:00:00+09:00",
+  "items": [
+    {
+      "trigger": "見る",
+      "url": "https://tech-verse.lycorp.co.jp/2026/ja/",
+      "title": "Tech-Verse 2026（LINEヤフー 技術カンファレンス）",
+      "domain": "tech-verse.lycorp.co.jp",
+      "fetchOk": true,
+      "points": [
+        "LINEヤフー主催の技術カンファレンス「Tech-Verse 2026」の公式サイト。2026年6月29日にオンライン開催。",
+        "構成は「AI」と「Core Technology」の2トラック。最先端の挑戦と蓄積した知見の共有がテーマ。",
+        "主要セッション例: AIコーディングエージェント、AI時代の認可標準「ID-JAG」、LINE API Gateway の進化、LINEメッセージングのアーキテクチャ移行。",
+        "登壇者には朴イビン・並木良太・Chee Hoon Lee・Jongwoo Han ら国内外の技術者。",
+        "セッション前の1週間、AI / Core Technology カテゴリで毎日厳選記事を配信。テックブログで詳細解説も公開予定。",
+        "規模感の数値: LINE API Gateway は1日300億リクエストを処理、B2B認証基盤は数千万人規模の統合。",
+        "（メモ「見る」より）開催が6/29のため、事前記事の配信が始まるこのタイミングで全体像を把握しておくと当日の取捨選択がしやすい。"
+      ],
+      "note": ""
+    },
+    {
+      "trigger": "参考に",
+      "url": "https://netflixtechblog.com/model-once-represent-everywhere-uda-unified-data-architecture-at-netflix-6a6aee261d8d",
+      "title": "Model Once, Represent Everywhere: UDA (Unified Data Architecture) at Netflix",
+      "domain": "netflixtechblog.com",
+      "fetchOk": false,
+      "points": [],
+      "note": "本文取得不可（Medium のログイン要求でリダイレクトループ）。リンク先で要確認。"
+    }
+  ]
+}
