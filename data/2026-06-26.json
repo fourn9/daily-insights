@@ -18,15 +18,6 @@
         "（メモ「見る」より）開催が6/29のため、事前記事の配信が始まるこのタイミングで全体像を把握しておくと当日の取捨選択がしやすい。"
       ],
       "note": ""
-    },
-    {
-      "trigger": "参考に",
-      "url": "https://netflixtechblog.com/model-once-represent-everywhere-uda-unified-data-architecture-at-netflix-6a6aee261d8d",
-      "title": "Model Once, Represent Everywhere: UDA (Unified Data Architecture) at Netflix",
-      "domain": "netflixtechblog.com",
-      "fetchOk": false,
-      "points": [],
-      "note": "本文取得不可（Medium のログイン要求でリダイレクトループ）。リンク先で要確認。"
     }
   ]
 }
