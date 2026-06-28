@@ -24,9 +24,12 @@
    - 本文に**動作ワードを含み**、かつ**URLを含む**投稿だけ採用。ニュースサマリー等の長文は除外。
    - 1メッセージに複数URLがあれば各URLを別アイテムにする。
 
-3. **各URLを深掘り要約**: `WebFetch`（不可なら Exa）で本文取得。
-   - `points`: **5〜10点**の箇条書き。人物・企業・ツール名・数値・仕組み・結論まで具体的に。
-   - 取得不可（x.com 等）: `fetchOk:false`・`points:[]`・`note` に理由。**捏造しない。**
+3. **各URLを深掘り要約**: 本文取得 → `points` は **5〜10点**の箇条書き（人物・企業・ツール名・数値・仕組み・結論まで具体的に）。
+   - 通常URL: `WebFetch`（不可なら Exa）。
+   - **`x.com` / `twitter.com` の URL**: `WebFetch` は 402 で不可。代わりに `node scripts/fetch-x.mjs <URL>` を使う。
+     返る JSON の `text`（通常ツイート全文）と `articleTitle`＋`articlePreview`（X長文記事の見出し＋冒頭）から要約する。
+     記事は冒頭プレビューまでしか取れないので、その旨を1点添える（全文はリンク先）。`ok:false` のときだけ取得不可扱い。
+   - 取得不可（fetch-x も ok:false 等）: `fetchOk:false`・`points:[]`・`note` に理由。**捏造しない。**
    - `trigger` はその投稿で使われた動作ワード、`title`/`domain` も埋める。
 
 4. **データ保存**: `data/<DATE>.json` を README のフォーマットで書く（0件でも `items:[]` で作成）。
