@@ -6,6 +6,10 @@ set -u
 # launchd は最小環境なので PATH を明示
 export PATH="/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:$HOME/.local/bin"
 
+# claude.ai サブスクログインを使う（API キーは使用上限・従量課金回避のため無効化）。
+# API キーが set だと claude.ai 認証より優先され、上限到達で失敗する。
+unset ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN
+
 REPO="$HOME/Desktop/Findy/Claude/iroiro/daily-insights"
 cd "$REPO" || { echo "repo not found: $REPO"; exit 1; }
 
