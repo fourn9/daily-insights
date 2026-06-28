@@ -59,6 +59,10 @@ const SHARED_CSS = `
   .src{font-size:.78rem;color:var(--muted);margin:0 0 8px;letter-spacing:.02em;word-break:break-all;}
   ul.points{margin:6px 0 0;padding-left:1.25em;}
   ul.points li{margin:3px 0;font-size:.95rem;}
+  .tldr{margin:6px 0 8px;padding:8px 12px;background:var(--accent-bg);border-radius:8px;font-size:.95rem;}
+  .tldr b{color:var(--accent);}
+  .takeaway{margin:10px 0 0;padding-left:.7em;border-left:3px solid var(--accent);color:var(--fg);font-size:.92rem;}
+  .takeaway b{color:var(--accent);}
   .fail{color:#c14;font-size:.9rem;margin:6px 0 0;}
   ul.briefs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem;}
   ul.briefs a{display:flex;align-items:center;gap:.7rem;padding:.85rem 1rem;background:var(--card);
@@ -108,8 +112,11 @@ export function renderReport(data) {
             const note = it.note || "本文取得不可・リンクのみ";
             body = `  <p class="fail">⚠ ${escapeHtml(note)}</p>`;
           } else {
+            const tldr = it.summary ? `  <p class="tldr"><b>TL;DR</b> ${escapeHtml(it.summary)}</p>\n` : "";
             const pts = (it.points ?? []).map((p) => `    <li>${escapeHtml(p)}</li>`).join("\n");
-            body = `  <ul class="points">\n${pts}\n  </ul>`;
+            const ul = `  <ul class="points">\n${pts}\n  </ul>`;
+            const take = it.takeaway ? `\n  <p class="takeaway"><b>→ 使いどころ</b> ${escapeHtml(it.takeaway)}</p>` : "";
+            body = `${tldr}${ul}${take}`;
           }
           return `<article>
   <h3>${badge}<a href="${escapeHtml(it.url)}" target="_blank" rel="noopener">${title}</a></h3>

@@ -61,7 +61,9 @@ git add . && git commit -m "Add report for YYYY-MM-DD" && git push
       "title": "記事タイトル",
       "domain": "example.com",
       "fetchOk": true,
-      "points": ["深掘り箇条書き 5〜10点 ..."],
+      "summary": "TL;DR（1〜2行）: 結局これは何で何が嬉しいか",
+      "points": ["要点 3〜6点（仕組み・数字・根拠を絞る）"],
+      "takeaway": "使いどころ（1行）",
       "note": ""
     }
   ]

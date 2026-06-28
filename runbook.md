@@ -24,10 +24,18 @@
    - 本文に**動作ワードを含み**、かつ**URLを含む**投稿だけ採用。ニュースサマリー等の長文は除外。
    - 1メッセージに複数URLがあれば各URLを別アイテムにする。
 
-3. **各URLを深掘り要約**: 本文取得 → `points` は **8〜15点**の箇条書き（背景・仕組み・手法詳細・実験設定・数値・固有名詞・結論・限界まで具体的に。アブストラクト止まりにしない）。
+3. **各URLを本文取得し、決まった構造で要約する**。各アイテムは必ず3層:
+   - `summary`（**TL;DR 1〜2行**）= 「結局これは何で、何が嬉しいか」を最初に断言。
+   - `points`（**要点 3〜6点**）= 仕組み・数字・固有名詞・根拠を絞って。長い羅列にしない（壁にしない）。
+   - `takeaway`（**使いどころ 1行**）= 自分にとっての示唆。
+   取得元の使い分け:
    - 通常URL: `WebFetch`（不可なら Exa）。
-   - **arXiv（arxiv.org/abs/<id>）**: アブストラクトだけでなく**本文HTML** `https://arxiv.org/html/<id>`（無ければ `https://ar5iv.labs.arxiv.org/html/<id>`）を取得し、手法の仕組み・実験設定（モデル名/データ/ベースライン/試行数）・結果の数値・限界まで深掘りする。
-   - 長文記事で全文URL（リンク先）がある場合は、可能なら**リンク先本文も取得**して深掘り（取れない部分は冒頭まで＋その旨を明記）。
+   - **arXiv（arxiv.org/abs/<id>）**: アブスト止まりにせず**本文HTML** `https://arxiv.org/html/<id>`（無ければ `https://ar5iv.labs.arxiv.org/html/<id>`）から手法・実験設定・数値・限界まで取る。
+   - **`x.com` / `twitter.com`**: `WebFetch` は 402。`node scripts/fetch-x.mjs <URL>` を使う。
+     - 通常ツイート → `text`（全文）から要約。
+     - **X長文記事**（`text` がリンクのみ・`articleTitle` あり）→ 本文はX側ログイン要で取れないことが多い。**記事タイトルを `WebSearch` で検索して正規ソース（公式ブログ等）を探し**、取れれば本文を深掘り（その旨を1点添える）。見つからなければ `articleTitle`＋`articlePreview`＋目次＋「全文はリンク先」で止める（捏造しない）。
+   - 取得不可: `fetchOk:false`・`points:[]`・`note` に理由。**捏造しない**。
+   - `trigger`/`title`/`domain` も埋める。
    - **`x.com` / `twitter.com` の URL**: `WebFetch` は 402 で不可。代わりに `node scripts/fetch-x.mjs <URL>` を使う。
      返る JSON の `text`（通常ツイート全文）と `articleTitle`＋`articlePreview`（X長文記事の見出し＋冒頭）から要約する。
      記事は冒頭プレビューまでしか取れないので、その旨を1点添える（全文はリンク先）。`ok:false` のときだけ取得不可扱い。
