@@ -64,14 +64,19 @@
   <h3><span class="badge">読む</span><a href="https://arxiv.org/abs/2511.00592" target="_blank" rel="noopener">Agentic Auto-Scheduling: An Experimental Study of LLM-Guided Loop Optimization (arXiv:2511.00592)</a></h3>
   <p class="src">arxiv.org</p>
   <ul class="points">
-    <li>著者は Massinissa Merouani・Islem Kara Bernou・Riyadh Baghdadi。複雑なループネストの自動コード最適化を扱う。</li>
-    <li>課題: 現代ハードウェア上での最適化戦略の探索が難しく、自動化が必要。</li>
-    <li>中核アイデア: LLM とコンパイラの閉じたフィードバックループ。LLM が変換を提案→コンパイラが合法性と性能改善を報告→LLM が戦略を反復改善。</li>
-    <li>フレームワーク名は ComPilot。タスク固有のファインチューニング無しで、既製の LLM を対話的な最適化エージェントとして使う。</li>
-    <li>評価: PolyBench ベンチマークスイートを用い、ゼロショット手法として検証。</li>
-    <li>主要結果: 幾何平均で2.66倍（単一実行）/3.54倍（最良5実行）の高速化。Pluto ポリヘドラ最適化器と競争的で多くの場合上回る。</li>
-    <li>PACT 2025（34th Intl. Conf. on Parallel Architectures and Compilation Techniques）採択、12ページ＋付録。</li>
-    <li>結論: 汎用 LLM もコンパイラフィードバックで根拠付ければコード最適化に有効。エージェント型AIの有望な方向性。</li>
+    <li>【課題】ループ最適化は科学計算/MLの性能ボトルネック。GCC/LLVMの汎用ヒューリスティックは不安定、Pluto等の多面体最適化器は解析的コスト関数を最適化するため実測性能と乖離、LLM直接生成は意味保存を形式検証できない——という既存手法の限界を出発点にする。</li>
+    <li>【中核】ComPilot というフレームワーク。LLM を最適化エージェント、コンパイラ（Tiramisu, commit 041afad）を環境とし、両者の閉じた『最適化対話』ループで進める。タスク固有のファインチューニング無しで既製LLMを使うのが特徴。</li>
+    <li>【手順1: 文脈初期化】システムプロンプト→対象ループネストを標準化（計算ブロックにID付与 comp05 等、ループ/バッファ名を a,b,c,buf0… に匿名化、初期実行時間を提示）→LLMにChain-of-Thoughtで構造分解と戦略立案をさせる。</li>
+    <li>【手順2: 反復最適化】LLMが推論＋`&lt;schedule&gt;…&lt;/schedule&gt;`でスケジュール提案→パーサが構文/意味チェック→コンパイラが2段階検証（軽量事前チェック＋多面体依存解析の合法性確認）→フィードバックを5分類（Invalid/Illegal/Solver Failure/Compiler Crash/Successful=実測高速化比）で返す。</li>
+    <li>【学習の仕組み】全対話履歴をコンテキストに積みインコンテキスト学習で適応。早期終了（no_further_transformations）を抑えて探索継続、局所最適脱出のため複数回実行（multi-run）。</li>
+    <li>【対象変換】9プリミティブ: Fusion / Shifting / Interchange / Parallelization / 2D・3D Tiling / Unrolling / Skewing / Reversal。スキュー・シフト係数は Tiramisu 内部ソルバが決定。</li>
+    <li>【実験設定】主LLMは gemini-2.0-flash（比較に gpt-4o, o3-mini, llama3.3-70B, qwq-32B, qwen2.5-coder-32B, gemma3-27B, codestral-22B）。PolyBench/C v4.2.1 の30カーネル×5サイズ=150インスタンス。Intel Xeon E5-2695 v2 ×2(48スレッド)。各インスタンス40回独立実行・1実行30反復(T=30)、best-of-5 を標準、95%信頼区間付き。</li>
+    <li>【結果: 単一実行】幾何平均 2.66倍高速化（95%CI 2.60–2.77）。correlation_XLARGE で339倍（外側並列化＋タイリング＋展開で48スレッド活用）、trmm_XLARGE で183倍などの特異例。</li>
+    <li>【結果: マルチラン】best-of-5 で幾何平均 3.54倍（CI 3.45–3.58）。中央値1.59倍、上位10%で53倍超。</li>
+    <li>【vs Pluto】ComPilot_5 は Pluto最適化比で幾何平均2.94倍、119勝/9分/22敗。小サイズで圧勝（MINI 16.35倍）だが大サイズは劣勢（LARGE 1.06倍、XLARGE 0.82倍）。Plutoの変換が実測で悪い時は実行フィードバックで回避（trisolv等）。</li>
+    <li>【弱点の数値】提案の約2/3が非生産的（実行可能36.1%・無効31.4%・違法32.5%）。複雑依存のcholesky/durbin/ludcmpは実行可能&lt;5%で高速化できず。CPU/キャッシュ仕様をプロンプトに入れても戦略は有意に変わらなかった。</li>
+    <li>【コスト】T=30で平均8.9分/インスタンス（XLARGE約16分）。ボトルネックはLLMでなくコンパイラ処理78.5%（合法性確認・コンパイル・実測）。</li>
+    <li>【結論/今後】汎用LLMも実行フィードバックで接地すれば微調整なしで複雑な最適化空間を探索可能。今後は違法理由の詳細フィードバック、HPCカウンタ提供、ビームサーチ等とのハイブリッド、対話履歴の圧縮、変換集合の拡張。PACT 2025採択（12p＋付録）。</li>
   </ul>
 </article>
 
@@ -82,7 +87,7 @@
     <li>AIの「ループ（反復的な使い方）」を解説するX長文記事。タイトルは『Loops explained: Claude, GPT, Mira and what actually works』。</li>
     <li>問題提起: 多くの人はAIを何年も使っているのに、いまだに最も遅い使い方（入力→待つ→手で直す→また聞く、を全部手作業）をしている。</li>
     <li>「速いやり方があるのにそれをしていない理由は…」と本論へ続く構成。</li>
-    <li>※ X長文記事のため syndication で冒頭プレビューまで取得。全文・具体的手法はリンク先で確認。</li>
+    <li>※ X長文記事は syndication で見出し＋冒頭プレビューまで取得（全文はX側ログイン要）。詳細・具体手法はリンク先で確認。</li>
   </ul>
 </article>
 
@@ -105,7 +110,7 @@
     <li>Claude Code の『dynamic workflows（動的ワークフロー）』リリースを紹介するX長文記事。</li>
     <li>Claude が、目の前のタスク専用のハーネス（harness）をその場で自分で書けるようになった、という内容。</li>
     <li>既定の Claude Code ハーネスはコーディング向けだが、それ以外のタスクにも動的に対応できる点が新しい。</li>
-    <li>※ X長文記事のため syndication で冒頭プレビューまで取得。全文はリンク先で確認。</li>
+    <li>※ X長文記事は syndication で見出し＋冒頭プレビューまで取得。全文はリンク先で確認。</li>
   </ul>
 </article>
 </section>
